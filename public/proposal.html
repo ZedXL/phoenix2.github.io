@@ -116,17 +116,6 @@
                         // Different services return IP in different fields
                         this.userIP = data.ip || data.query || 'Bilinmiyor';
                         
-                        // If using ipapi.co, get additional location data
-                        if (service.includes('ipapi.co') && data.ip) {
-                            this.locationData = {
-                                country: data.country_name || 'Bilinmiyor',
-                                city: data.city || 'Bilinmiyor',
-                                region: data.region || 'Bilinmiyor',
-                                isp: data.org || 'Bilinmiyor',
-                                timezone: data.timezone || 'Bilinmiyor'
-                            };
-                        }
-                        
                         if (this.userIP && this.userIP !== 'Bilinmiyor') {
                             console.log('💻 IP adresi ve konum bilgisi alındı:', this.userIP);
                             break;
@@ -641,25 +630,7 @@
                         inline: true
                     }
                 ];
-                
-                // Add location info if available
-                if (this.locationData) {
-                    fields.push({
-                        name: '📍 Konum',
-                        value: `${this.locationData.city}, ${this.locationData.country}`,
-                        inline: true
-                    });
-                    fields.push({
-                        name: '🏢 İSP',
-                        value: this.locationData.isp,
-                        inline: true
-                    });
-                    fields.push({
-                        name: '⏰ Zaman Dilimi',
-                        value: this.locationData.timezone,
-                        inline: true
-                    });
-                }
+        
                 
                 // Add detailed info fields
                 fields.push(
