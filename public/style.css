@@ -1,0 +1,758 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+    /* Better font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="1"/></g></svg>') repeat;
+    pointer-events: none;
+}
+
+/* Background Effects */
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hearts-bg, .cats-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes floatAcross {
+    0% {
+        transform: translateX(0) rotate(0deg);
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(-120vw) rotate(-360deg);
+        opacity: 0;
+    }
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+}
+
+.proposal-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: visible;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.proposal-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 182, 193, 0.1), transparent);
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.heart-bg {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    opacity: 0.3;
+    animation: heartBeat 2s ease-in-out infinite;
+    z-index: 3;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.main-question {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #d63384;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1s ease-out;
+    z-index: 3;
+    position: relative;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 40px;
+    font-weight: 300;
+    animation: fadeInUp 1s ease-out 0.2s both;
+    z-index: 3;
+    position: relative;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    z-index: 3;
+    position: relative;
+}
+
+.btn {
+    border: none;
+    border-radius: 25px;
+    padding: 18px 35px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    min-width: 140px;
+    display: inline-block;
+    z-index: 4;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.yes-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
+    animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+.yes-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(255, 107, 107, 0.6);
+}
+
+.no-btn {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    color: white;
+    box-shadow: 0 15px 30px rgba(116, 185, 255, 0.4);
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.no-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(116, 185, 255, 0.6);
+}
+
+.no-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: scale(0.8);
+}
+
+.btn span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Success Screen */
+.success-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+}
+
+.hearts-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.heart {
+    position: absolute;
+    color: #ff6b6b;
+    font-size: 2rem;
+    animation: floatHeart 4s linear infinite;
+}
+
+@keyframes floatHeart {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.success-message {
+    text-align: center;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 60px 40px;
+    border-radius: 30px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    max-width: 500px;
+    margin: 0 20px;
+}
+
+.love-message {
+    font-family: 'Dancing Script', cursive;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #d63384;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: bounceIn 1s ease-out;
+}
+
+.celebration-text {
+    font-size: 1.3rem;
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-weight: 400;
+    animation: fadeInUp 1s ease-out 0.5s both;
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
+}
+
+.restart-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(255, 107, 107, 0.6);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes fadeInBounce {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.5);
+    }
+    70% {
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+@keyframes sparkleFloat {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0) rotate(360deg);
+    }
+}
+
+.only-yes-message h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.only-yes-message p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.romantic-quotes {
+    margin-top: 20px;
+    max-width: 400px;
+}
+
+.romantic-quotes p {
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Music Control */
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.music-control button {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.music-control button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.music-control button.playing {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 768px) {
+    .proposal-card {
+        padding: 30px 20px;
+        margin: 10px;
+        border-radius: 25px;
+    }
+    
+    .main-question {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+    
+    .buttons-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 280px;
+        padding: 16px 30px;
+        font-size: 1.1rem;
+        min-height: 50px;
+        /* Touch-friendly size */
+    }
+    
+    .love-message {
+        font-size: 2.8rem;
+        line-height: 1.1;
+    }
+    
+    .success-message {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .celebration-text {
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+    
+    .romantic-quotes p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin: 12px 0;
+    }
+    
+    .music-control {
+        top: 15px;
+        right: 15px;
+    }
+    
+    .music-control button {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .only-yes-message {
+        width: 280px !important;
+        margin-left: -140px !important;
+        padding: 15px 20px !important;
+    }
+    
+    .only-yes-message h3 {
+        font-size: 1.2rem;
+    }
+    
+    .only-yes-message p {
+        font-size: 0.9rem;
+    }
+}
+
+/* New celebration animations */
+@keyframes explode {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) rotate(360deg);
+    }
+}
+
+@keyframes floatUpSpin {
+    0% {
+        opacity: 0;
+        transform: translateY(0) rotate(0deg) scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-20vh) rotate(72deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100vh) rotate(360deg) scale(0.8);
+    }
+}
+
+@keyframes flashEffect {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* New celebration animations */
+@keyframes explode {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) rotate(360deg);
+    }
+}
+
+@keyframes floatUpSpin {
+    0% {
+        opacity: 0;
+        transform: translateY(0) rotate(0deg) scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-20vh) rotate(72deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100vh) rotate(360deg) scale(0.8);
+    }
+}
+
+/* Extra Small Mobile Devices */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .proposal-card {
+        padding: 25px 15px;
+        margin: 5px;
+    }
+    
+    .main-question {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 25px;
+    }
+    
+    .btn {
+        padding: 14px 25px;
+        font-size: 1rem;
+        max-width: 250px;
+    }
+    
+    .love-message {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+    }
+    
+    .celebration-text {
+        font-size: 1rem;
+        margin-bottom: 25px;
+    }
+    
+    .romantic-quotes p {
+        font-size: 0.9rem;
+        margin: 10px 0;
+    }
+    
+    .music-control {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .music-control button {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .only-yes-message {
+        width: 250px !important;
+        margin-left: -125px !important;
+        padding: 12px 15px !important;
+        bottom: -100px !important;
+    }
+    
+    .only-yes-message h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .only-yes-message p {
+        font-size: 0.8rem;
+    }
+    
+    .heart-bg {
+        top: 15px;
+        right: 20px;
+        font-size: 30px;
+    }
+}
+
+/* Landscape Orientation for Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .proposal-card {
+        padding: 20px 25px;
+        max-width: 90%;
+    }
+    
+    .main-question {
+        font-size: 2rem;
+    }
+    
+    .buttons-container {
+        flex-direction: row;
+        gap: 20px;
+    }
+    
+    .btn {
+        max-width: 180px;
+        padding: 12px 20px;
+    }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 48px; /* iOS/Android touch target minimum */
+        font-size: 1.1rem;
+    }
+    
+    .music-control button {
+        min-width: 48px;
+        min-height: 48px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .btn:hover::before {
+        width: 0;
+        height: 0;
+    }
+    
+    .music-control button:hover {
+        transform: none;
+    }
+}</absolute_file_name>
+    </file>
