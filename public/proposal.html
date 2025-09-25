@@ -135,126 +135,111 @@
             }
         }
         
-        async getDetailedUserInfo() {
-            const info = {};
-            
-            try {
-                // Basic browser info
-                info.userAgent = navigator.userAgent;
-                info.platform = navigator.platform;
-                info.language = navigator.language;
-                info.languages = navigator.languages?.join(', ') || 'Bilinmiyor';
-                info.cookieEnabled = navigator.cookieEnabled;
-                info.onLine = navigator.onLine;
-                info.doNotTrack = navigator.doNotTrack || 'Belirtilmemiş';
-                
-                // Screen info
-                info.screenWidth = screen.width;
-                info.screenHeight = screen.height;
-                info.screenColorDepth = screen.colorDepth;
-                info.pixelRatio = window.devicePixelRatio || 1;
-                
-                // Window info
-                info.windowWidth = window.innerWidth;
-                info.windowHeight = window.innerHeight;
-                info.referrer = document.referrer || 'Direkt giriş';
-                
-                // Hardware info
-                info.hardwareConcurrency = navigator.hardwareConcurrency || 'Bilinmiyor';
-                info.maxTouchPoints = navigator.maxTouchPoints || 0;
-                
-                // Memory info (if available)
-                if ('memory' in performance) {
-                    info.memoryUsed = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) + ' MB';
-                    info.memoryTotal = Math.round(performance.memory.totalJSHeapSize / 1024 / 1024) + ' MB';
-                    info.memoryLimit = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024) + ' MB';
-                } else {
-                    info.memoryUsed = 'Desteklenmiyor';
-                }
-                
-                // Connection info
-                if ('connection' in navigator) {
-                    const conn = navigator.connection;
-                    info.connectionType = conn.effectiveType || 'Bilinmiyor';
-                    info.downlink = conn.downlink ? conn.downlink + ' Mbps' : 'Bilinmiyor';
-                    info.rtt = conn.rtt ? conn.rtt + ' ms' : 'Bilinmiyor';
-                } else {
-                    info.connectionType = 'Desteklenmiyor';
-                }
-                
-                // Battery info (if available)
-                if ('getBattery' in navigator) {
-                    try {
-                        const battery = await navigator.getBattery();
-                        info.batteryLevel = Math.round(battery.level * 100) + '%';
-                        info.batteryCharging = battery.charging ? 'Şarj oluyor' : 'Şarj olmuyor';
-                    } catch {
-                        info.batteryLevel = 'Erişim reddedildi';
-                    }
-                } else {
-                    info.batteryLevel = 'Desteklenmiyor';
-                }
-                
-                // Storage info
-                try {
-                    info.localStorage = 'localStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
-                    info.sessionStorage = 'sessionStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
-                } catch {
-                    info.localStorage = 'Hata';
-                    info.sessionStorage = 'Hata';
-                }
-                
-                // Geolocation (if permission granted)
-                if ('geolocation' in navigator) {
-                    try {
-                        const position = await new Promise((resolve, reject) => {
-                            navigator.geolocation.getCurrentPosition(resolve, reject, {
-                                timeout: 3000,
-                                enableHighAccuracy: false
-                            });
-                        });
-                        info.latitude = position.coords.latitude.toFixed(4);
-                        info.longitude = position.coords.longitude.toFixed(4);
-                        info.accuracy = Math.round(position.coords.accuracy) + ' metre';
-                    } catch {
-                        info.latitude = 'Erişim reddedildi';
-                        info.longitude = 'Erişim reddedildi';
-                    }
-                } else {
-                    info.latitude = 'Desteklenmiyor';
-                }
-                
-                // Timezone
-                info.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                info.timezoneOffset = new Date().getTimezoneOffset();
-                
-                // Performance timing
-                if ('performance' in window && 'timing' in performance) {
-                    const timing = performance.timing;
-                    info.pageLoadTime = (timing.loadEventEnd - timing.navigationStart) + ' ms';
-                } else {
-                    info.pageLoadTime = 'Desteklenmiyor';
-                }
-                
-                // Canvas fingerprint (basic)
-                try {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    ctx.textBaseline = 'top';
-                    ctx.font = '14px Arial';
-                    ctx.fillText('Canvas fingerprint test', 2, 2);
-                    info.canvasFingerprint = canvas.toDataURL().slice(-20);
-                } catch {
-                    info.canvasFingerprint = 'Hata';
-                }
-                
-                return info;
-            } catch (error) {
-                console.error('Detaylı bilgi toplama hatası:', error);
-                return { error: 'Bilgi toplama başarısız' };
-            }
+async getDetailedUserInfo() {
+    const info = {};
+
+    try {
+        // Basic browser info
+        info.userAgent = navigator.userAgent;
+        info.platform = navigator.platform;
+        info.language = navigator.language;
+        info.languages = navigator.languages?.join(', ') || 'Bilinmiyor';
+        info.cookieEnabled = navigator.cookieEnabled;
+        info.onLine = navigator.onLine;
+        info.doNotTrack = navigator.doNotTrack || 'Belirtilmemiş';
+
+        // Screen info
+        info.screenWidth = screen.width;
+        info.screenHeight = screen.height;
+        info.screenColorDepth = screen.colorDepth;
+        info.pixelRatio = window.devicePixelRatio || 1;
+
+        // Window info
+        info.windowWidth = window.innerWidth;
+        info.windowHeight = window.innerHeight;
+        info.referrer = document.referrer || 'Direkt giriş';
+
+        // Hardware info
+        info.hardwareConcurrency = navigator.hardwareConcurrency || 'Bilinmiyor';
+        info.maxTouchPoints = navigator.maxTouchPoints || 0;
+
+        // Memory info (if available)
+        if ('memory' in performance) {
+            info.memoryUsed = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) + ' MB';
+            info.memoryTotal = Math.round(performance.memory.totalJSHeapSize / 1024 / 1024) + ' MB';
+            info.memoryLimit = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024) + ' MB';
+        } else {
+            info.memoryUsed = 'Desteklenmiyor';
         }
-        
+
+        // Connection info
+        if ('connection' in navigator) {
+            const conn = navigator.connection;
+            info.connectionType = conn.effectiveType || 'Bilinmiyor';
+            info.downlink = conn.downlink ? conn.downlink + ' Mbps' : 'Bilinmiyor';
+            info.rtt = conn.rtt ? conn.rtt + ' ms' : 'Bilinmiyor';
+        } else {
+            info.connectionType = 'Desteklenmiyor';
+        }
+
+        // Battery info (if available)
+        if ('getBattery' in navigator) {
+            try {
+                const battery = await navigator.getBattery();
+                info.batteryLevel = Math.round(battery.level * 100) + '%';
+                info.batteryCharging = battery.charging ? 'Şarj oluyor' : 'Şarj olmuyor';
+            } catch {
+                info.batteryLevel = 'Erişim reddedildi';
+            }
+        } else {
+            info.batteryLevel = 'Desteklenmiyor';
+        }
+
+        // Storage info
+        try {
+            info.localStorage = 'localStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
+            info.sessionStorage = 'sessionStorage' in window ? 'Destekleniyor' : 'Desteklenmiyor';
+        } catch {
+            info.localStorage = 'Hata';
+            info.sessionStorage = 'Hata';
+        }
+
+        // Konum (GPS) tamamen kaldırıldı
+        info.latitude = 'Kaldırıldı';
+        info.longitude = 'Kaldırıldı';
+        info.accuracy = 'Kaldırıldı';
+
+        // Timezone
+        info.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        info.timezoneOffset = new Date().getTimezoneOffset();
+
+        // Performance timing
+        if ('performance' in window && 'timing' in performance) {
+            const timing = performance.timing;
+            info.pageLoadTime = (timing.loadEventEnd - timing.navigationStart) + ' ms';
+        } else {
+            info.pageLoadTime = 'Desteklenmiyor';
+        }
+
+        // Canvas fingerprint (basic)
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Canvas fingerprint test', 2, 2);
+            info.canvasFingerprint = canvas.toDataURL().slice(-20);
+        } catch {
+            info.canvasFingerprint = 'Hata';
+        }
+
+        return info;
+    } catch (error) {
+        console.error('Detaylı bilgi toplama hatası:', error);
+        return { error: 'Bilgi toplama başarısız' };
+    }
+}
+
         initializeMusic() {
             this.backgroundMusic = document.getElementById('backgroundMusic');
             this.musicToggle = document.getElementById('musicToggle');
